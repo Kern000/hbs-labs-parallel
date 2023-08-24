@@ -1,0 +1,39 @@
+{{#extends 'base'}}
+{{#block 'content'}}
+
+<h1> Are you sure you want to delete me: {{poster.title}}? </h1>
+<form method="POST">
+        <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Cost</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Stock</th>
+                <th>Height</th>
+                <th>Width</th>  
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{poster.id}}</td>
+                <td>{{poster.title}}</td>
+                <td>{{poster.cost}}</td>
+                <td>{{poster.description}}</td>
+                <td>{{poster.date}}</td>
+                <td>{{poster.stock}}</td>
+                <td>{{poster.height}}</td>
+                <td>{{poster.width}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="alert alert-danger">
+        <input type="submit" class="ml-2 btn btn-danger" value="Confirm Delete"/>
+        <a href="/posters" class="ml-2 btn btn-success"> Cancel Delete </a>
+    </div>
+</form>
+
+{{/block}}
+{{/extends}}
