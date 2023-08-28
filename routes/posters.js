@@ -1,28 +1,36 @@
 const express = require("express");
 const router = express.Router();
-
-const { Posters } = require('../models');
+const { Poster, Property } = require('../models');
 const { bootstrapField, createPosterProductForm } = require('../forms');
 
 router.get('/', async (req,res)=>{
-    let posters = await Posters.collection().fetch();
+    let posters = await Poster.collection().fetch(
+    {
+        withRelated:['property']        
+    });
     res.render('posters/index', {
         'posters': posters.toJSON()
     })
 })
 
 router.get('/add-poster', async (req, res) => {
-    const posterForm = createPosterProductForm();
+
+    const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
+
+    const posterForm = createPosterProductForm(allProperties);
     res.render('posters/create',{
         'form': posterForm.toHTML(bootstrapField)
     })
 })
 
-router.post('/add-poster', (req,res)=>{
-    const posterForm = createPosterProductForm();
+router.post('/add-poster', async (req,res)=>{
+
+    const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
+
+    const posterForm = createPosterProductForm(allProperties);
     posterForm.handle(req, {
         "success":async (form)=>{
-            const poster = new Posters();
+            const poster = new Poster();
             poster.set('title', form.data.title);
             poster.set('cost', form.data.cost);
             poster.set('description', form.data.description);
@@ -30,6 +38,7 @@ router.post('/add-poster', (req,res)=>{
             poster.set('stock', form.data.stock);
             poster.set('height', form.data.height);
             poster.set('width', form.data.width);
+            poster.set('media_property_id', form.data.media_property_id);
             await poster.save();
             res.redirect('/posters');
         },
@@ -50,12 +59,16 @@ router.post('/add-poster', (req,res)=>{
 
 router.get('/:posterId/update', async (req,res)=>{
     const posterId = req.params.posterId;
-    const poster = await Posters.where({
+    const poster = await Poster.where({
         'id': posterId
     }).fetch({
-        require:true
+        require:true,
+        withRelated:['property']
     })
-    const posterForm = createPosterProductForm();
+
+    const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')]) 
+
+    const posterForm = createPosterProductForm(allProperties);
     posterForm.fields.title.value = poster.get('title');
     posterForm.fields.cost.value = poster.get('cost');
     posterForm.fields.description.value = poster.get('description');
@@ -63,6 +76,7 @@ router.get('/:posterId/update', async (req,res)=>{
     posterForm.fields.stock.value = poster.get('stock');
     posterForm.fields.height.value = poster.get('height');
     posterForm.fields.width.value = poster.get('width');
+    posterForm.fields.media_property_id.value = poster.get('media_property_id');
 
     res.render('posters/update', {
         'form': posterForm.toHTML(bootstrapField)
@@ -72,13 +86,16 @@ router.get('/:posterId/update', async (req,res)=>{
 router.post('/:posterId/update', async (req,res)=>{
 
         const posterId = req.params.posterId;
-        const poster = await Posters.where({
+        const poster = await Poster.where({
             'id': posterId
         }).fetch({
-            require:true
+            require:true,
+            withRelated:['property']
         })
 
-        const posterForm = createPosterProductForm();
+        const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
+
+        const posterForm = createPosterProductForm(allProperties);
         posterForm.handle(req, {
             "success":async (posterForm)=>{
                 poster.set(posterForm.data);
@@ -103,7 +120,7 @@ router.post('/:posterId/update', async (req,res)=>{
 
 router.get('/:posterId/delete', async (req,res)=>{
     let posterId = req.params.posterId;
-    const poster = await Posters.where({
+    const poster = await Poster.where({
         'id': posterId
     }).fetch({
         require:true
@@ -115,7 +132,7 @@ router.get('/:posterId/delete', async (req,res)=>{
 
 router.post('/:posterId/delete', async (req,res)=>{
     let posterId = req.params.posterId;
-    const poster = await Posters.where({
+    const poster = await Poster.where({
         'id': posterId
     }).fetch({
         require:true

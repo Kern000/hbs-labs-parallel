@@ -23,7 +23,7 @@ var bootstrapField = function (name, object) {
     return '<div class="form-group">' + label + widget + error + '</div>';
 };
 
-const createPosterProductForm = () => {
+const createPosterProductForm = (properties=[]) => {
     return forms.create({
         'title': fields.string({
             required: true,
@@ -81,6 +81,13 @@ const createPosterProductForm = () => {
             },
             validators:[validators.integer()]
         }),
+        'media_property_id': fields.string({
+            label:'Property',
+            required: true,
+            errorAfterField: true,
+            widget: widgets.select(),
+            choices: properties
+        })
     })
 };
 
