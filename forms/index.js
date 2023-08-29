@@ -91,13 +91,10 @@ const createPosterProductForm = (properties=[], artists=[]) => {
         }),
         'artists': fields.string({
             label:'Artist',
-            require: true,
+            required: false,
             errorAfterField: true,
             widget: widgets.multipleSelect(),
-            choices: artists,
-            cssClasses: {
-                label: ['form-label']
-            }
+            choices: artists
         })
     })
 };
