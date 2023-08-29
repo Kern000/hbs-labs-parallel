@@ -4,7 +4,10 @@ const { Poster } = require('../models')
 
 //  #2 Add a new route to the Express router
 router.get('/', async (req,res)=>{
-    let posters = await Poster.collection().fetch();
+    let posters = await Poster.collection().fetch({
+        withRelated:['property', 'artists']
+    });
+
     res.render('landing/index', {
         'posters': posters.toJSON()
     })

@@ -23,15 +23,14 @@ var bootstrapField = function (name, object) {
     return '<div class="form-group">' + label + widget + error + '</div>';
 };
 
-const createPosterProductForm = (properties=[]) => {
+const createPosterProductForm = (properties=[], artists=[]) => {
     return forms.create({
         'title': fields.string({
             required: true,
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
-            },
-            validators:[validators.alphanumeric()]
+            }
         }),
         'cost': fields.number({
             required: true,
@@ -46,8 +45,7 @@ const createPosterProductForm = (properties=[]) => {
             errorAfterField: true,
             cssClasses: {
                 label: ['form-label']
-            },
-            validators:[validators.alphanumeric()]
+            }
         }),
         'date': fields.date({
             required: true,
@@ -86,7 +84,20 @@ const createPosterProductForm = (properties=[]) => {
             required: true,
             errorAfterField: true,
             widget: widgets.select(),
-            choices: properties
+            choices: properties,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'artists': fields.string({
+            label:'Artist',
+            require: true,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: artists,
+            cssClasses: {
+                label: ['form-label']
+            }
         })
     })
 };

@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { Poster, Property } = require('../models');
+const { Poster, Property, Artist } = require('../models');
 const { bootstrapField, createPosterProductForm } = require('../forms');
+const async = require('hbs/lib/async');
 
 router.get('/', async (req,res)=>{
     let posters = await Poster.collection().fetch(
     {
-        withRelated:['property']        
+        withRelated:['property', 'artists']
     });
     res.render('posters/index', {
         'posters': posters.toJSON()
@@ -17,7 +18,9 @@ router.get('/add-poster', async (req, res) => {
 
     const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
 
-    const posterForm = createPosterProductForm(allProperties);
+    const allArtists = await Artist.fetchAll().map(artist => [artist.get('id'), artist.get('name')])
+
+    const posterForm = createPosterProductForm(allProperties, allArtists);
     res.render('posters/create',{
         'form': posterForm.toHTML(bootstrapField)
     })
@@ -27,19 +30,28 @@ router.post('/add-poster', async (req,res)=>{
 
     const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
 
-    const posterForm = createPosterProductForm(allProperties);
+    const allArtists = await Artist.fetchAll().map(artist => [artist.get('id'), artist.get('name')])
+
+    const posterForm = createPosterProductForm(allProperties, allArtists);
     posterForm.handle(req, {
-        "success":async (form)=>{
+        "success":async (posterForm)=>{
             const poster = new Poster();
-            poster.set('title', form.data.title);
-            poster.set('cost', form.data.cost);
-            poster.set('description', form.data.description);
-            poster.set('date', form.data.date);
-            poster.set('stock', form.data.stock);
-            poster.set('height', form.data.height);
-            poster.set('width', form.data.width);
-            poster.set('media_property_id', form.data.media_property_id);
+            console.log(posterForm.data);
+
+            poster.set('title', posterForm.data.title);
+            poster.set('cost', posterForm.data.cost);
+            poster.set('description', posterForm.data.description);
+            poster.set('date', posterForm.data.date);
+            poster.set('stock', posterForm.data.stock);
+            poster.set('height', posterForm.data.height);
+            poster.set('width', posterForm.data.width);
+            poster.set('media_property_id', posterForm.data.media_property_id);
             await poster.save();
+
+            if (posterForm.data.artists){
+                await poster.artists().attach(posterForm.data.artists.split(','));
+            }
+
             res.redirect('/posters');
         },
         "error":(posterForm)=>{
@@ -63,12 +75,14 @@ router.get('/:posterId/update', async (req,res)=>{
         'id': posterId
     }).fetch({
         require:true,
-        withRelated:['property']
+        withRelated:['property', 'artists']
     })
 
     const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')]) 
 
-    const posterForm = createPosterProductForm(allProperties);
+    const allArtists = await Artist.fetchAll().map(artist => [artist.get('id'), artist.get('name')])
+
+    const posterForm = createPosterProductForm(allProperties, allArtists);
     posterForm.fields.title.value = poster.get('title');
     posterForm.fields.cost.value = poster.get('cost');
     posterForm.fields.description.value = poster.get('description');
@@ -77,6 +91,9 @@ router.get('/:posterId/update', async (req,res)=>{
     posterForm.fields.height.value = poster.get('height');
     posterForm.fields.width.value = poster.get('width');
     posterForm.fields.media_property_id.value = poster.get('media_property_id');
+
+    const selectedArtists = await poster.related('artists').pluck('id');
+    posterForm.fields.artists.value = selectedArtists;
 
     res.render('posters/update', {
         'form': posterForm.toHTML(bootstrapField)
@@ -90,16 +107,24 @@ router.post('/:posterId/update', async (req,res)=>{
             'id': posterId
         }).fetch({
             require:true,
-            withRelated:['property']
+            withRelated:['property', 'artists']
         })
 
         const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
 
-        const posterForm = createPosterProductForm(allProperties);
+        const allArtists = await Artist.fetchAll().map(artist => [artist.get('id'), artist.get('name')])
+
+        const posterForm = createPosterProductForm(allProperties, allArtists);
         posterForm.handle(req, {
             "success":async (posterForm)=>{
-                poster.set(posterForm.data);
+                let {artists, ...posterData} = posterForm.data
+                poster.set(posterData);
                 await poster.save();
+
+                const alreadyIndicatedArtists = await poster.related('artists').pluck('id');
+                await poster.artists().detach(alreadyIndicatedArtists);
+                await poster.artists().attach(posterForm.data.artists.split(','))
+
                 res.redirect('/posters');
             },
             "error":(posterForm)=>{
