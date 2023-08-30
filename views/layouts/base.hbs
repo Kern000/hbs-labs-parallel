@@ -38,10 +38,44 @@
                           <li class="nav-item mr-2">
                         <a class="nav-link" href="/posters/add-poster">Add poster</a>
                     </li>
+                    </li>
+                          <li class="nav-item mr-2">
+                        <a class="nav-link" href="/user/register">Register</a>
+                    </li>
+                    </li>
+                          <li class="nav-item mr-2">
+                        <a class="nav-link" href="/user/login">Login</a>
+                    </li>                    
                 </ul>
+                <div>
+                    {{#if user}}
+                        Welcome back, <a href="/user/profile">{{user.name}}</a>
+                        <a href="/user/logout" class="btn btn-primary btn-sm">Logout</a>
+                    {{/if}}
+                </div>
             </div>
         </nav>
         <section class="mt-3">
+            {{#if success_messages}}
+            <div class="alert alert-primary">
+                <ul>
+                    {{#each success_messages}}
+                        <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/if}}
+
+            {{#if error_messages}}
+            <div class="alert alert-danger">
+                <ul>
+                    {{#each error_messages}}
+                        <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/if}}
+
             {{#block 'content'}}{{/block}}
         </section>
     </div>

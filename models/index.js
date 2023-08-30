@@ -28,4 +28,8 @@ const Artist = bookshelf.model('Artist',{
     }
 })
 
-module.exports = { Poster, Property, Artist };
+const User = bookshelf.model('User',{
+    tableName:'users'
+})
+
+module.exports = { Poster, Property, Artist, User };

@@ -51,7 +51,7 @@ router.post('/add-poster', async (req,res)=>{
             if (posterForm.data.artists){
                 await poster.artists().attach(posterForm.data.artists.split(','));
             }
-
+            req.flash("success", "New product has been created successfully!")
             res.redirect('/posters');
         },
         "error":(posterForm)=>{
