@@ -95,6 +95,9 @@ const createPosterProductForm = (properties=[], artists=[]) => {
             errorAfterField: true,
             widget: widgets.multipleSelect(),
             choices: artists
+        }),
+        'image_url': fields.string({
+            widget: widgets.hidden()
         })
     })
 };

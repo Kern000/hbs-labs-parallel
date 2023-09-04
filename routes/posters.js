@@ -23,7 +23,10 @@ router.get('/add-poster', async (req, res) => {
 
     const posterForm = createPosterProductForm(allProperties, allArtists);
     res.render('posters/create',{
-        'form': posterForm.toHTML(bootstrapField)
+        'form': posterForm.toHTML(bootstrapField),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 
