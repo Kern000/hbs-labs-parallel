@@ -3,6 +3,7 @@
 
 <h1> Are you sure you want to delete me: {{poster.title}}? </h1>
 <form method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
         <table class="table">
         <thead>
             <tr>
