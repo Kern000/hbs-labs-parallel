@@ -3,6 +3,7 @@ const router = express.Router();
 const { Poster, Property, Artist } = require('../models');
 const { bootstrapField, createPosterProductForm } = require('../forms');
 const async = require('hbs/lib/async');
+const { checkAuthentication } = require("../middleware");
 
 router.get('/', async (req,res)=>{
     let posters = await Poster.collection().fetch(
@@ -26,7 +27,7 @@ router.get('/add-poster', async (req, res) => {
     })
 })
 
-router.post('/add-poster', async (req,res)=>{
+router.post('/add-poster', checkAuthentication, async (req,res)=>{
 
     const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')])
 

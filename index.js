@@ -6,6 +6,7 @@ require("dotenv").config();
 const session = require('express-session')
 const FileStore = require('session-file-store')(session)
 const flash = require('connect-flash');
+const csurf = require('csurf');
 
 // create an instance of express app
 let app = express();
@@ -35,12 +36,35 @@ app.use(session({
 }));
 
 app.use(flash());
+app.use(csurf());
+
+app.use(function(error, req, res, next){
+  if(error && error.code == "EBADCSRFTOKEN"){
+    req.flash("error", "Session expired, login and try again");
+    res.redirect('back');
+  } else {
+    next();
+  }
+})
+
+app.use(function(req,res,next){
+  res.locals.csrfToken = req.csrfToken();
+  next();
+})
+
 
 app.use(function(req,res,next){
   const successMessages = req.flash("success");
   const errorMessages = req.flash("error");
   res.locals.success_messages = successMessages;
   res.locals.error_messages = errorMessages;
+  next();
+})
+
+app.use(function(req, res, next){
+  if (req.session.user){
+    res.locals.user = req.session.user;
+  }
   next();
 })
 
