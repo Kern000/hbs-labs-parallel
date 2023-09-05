@@ -26,7 +26,7 @@ exports.up = function(db) {
       table: 'media_properties',
       mapping: 'id',
       rules: {
-        onDelete: 'restrict',
+        onDelete: 'cascade',
         onUpdate: 'restrict'
       }
     }

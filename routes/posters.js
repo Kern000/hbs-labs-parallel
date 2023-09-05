@@ -11,7 +11,7 @@ router.get('/', async (req,res)=>{
         withRelated:['property', 'artists']
     });
     res.render('posters/index', {
-        'posters': posters.toJSON()
+        'posters': posters.toJSON(),
     })
 })
 
@@ -50,6 +50,8 @@ router.post('/add-poster', checkAuthentication, async (req,res)=>{
             poster.set('height', posterForm.data.height);
             poster.set('width', posterForm.data.width);
             poster.set('media_property_id', posterForm.data.media_property_id);
+            poster.set('image_url', posterForm.data.image_url);
+            poster.set('thumbnail_url', posterForm.data.thumbnail_url)
             await poster.save();
 
             if (posterForm.data.artists){
@@ -87,20 +89,26 @@ router.get('/:posterId/update', async (req,res)=>{
     const allArtists = await Artist.fetchAll().map(artist => [artist.get('id'), artist.get('name')])
 
     const posterForm = createPosterProductForm(allProperties, allArtists);
-    posterForm.fields.title.value = poster.get('title');
-    posterForm.fields.cost.value = poster.get('cost');
-    posterForm.fields.description.value = poster.get('description');
-    posterForm.fields.date.value = poster.get('date');
-    posterForm.fields.stock.value = poster.get('stock');
-    posterForm.fields.height.value = poster.get('height');
-    posterForm.fields.width.value = poster.get('width');
-    posterForm.fields.media_property_id.value = poster.get('media_property_id');
+    posterForm.fields.title.value = await poster.get('title');
+    posterForm.fields.cost.value = await poster.get('cost');
+    posterForm.fields.description.value = await poster.get('description');
+    posterForm.fields.date.value = await poster.get('date');
+    posterForm.fields.stock.value = await poster.get('stock');
+    posterForm.fields.height.value = await poster.get('height');
+    posterForm.fields.width.value = await poster.get('width');
+    posterForm.fields.media_property_id.value = await poster.get('media_property_id');
+    posterForm.fields.image_url.value = await poster.get('image_url');
+    posterForm.fields.thumbnail_url.value = await poster.get('thumbnail_url');
 
     const selectedArtists = await poster.related('artists').pluck('id');
     posterForm.fields.artists.value = selectedArtists;
 
     res.render('posters/update', {
-        'form': posterForm.toHTML(bootstrapField)
+        'form': posterForm.toHTML(bootstrapField),
+        'poster': poster.toJSON(),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
     })
 })
 

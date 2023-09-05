@@ -16,6 +16,7 @@
                 <th>Width</th>
                 <th>Media Property</th>
                 <th>Artists</th>
+                <th>Image</th>
                 <th></th>
             </tr>
         </thead>
@@ -34,7 +35,13 @@
                 <td>
                     {{#each this.artists}}
                         <span class="badge bg-secondary">{{this.name}}</span>
-                    {{/each}}</td>
+                    {{/each}}
+                </td>
+                <td>
+                    {{#if this.thumbnail_url}}
+                        <img src="{{this.thumbnail_url}}" class="img-fluid" alt="image">
+                    {{/if}}
+                </td>
                 <td>
                     <a href="/posters/{{this.id}}/update" class="btn btn-primary btn-sm">Update</a>
                     <a href="/posters/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>

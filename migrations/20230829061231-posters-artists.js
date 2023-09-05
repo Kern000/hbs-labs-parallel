@@ -31,7 +31,7 @@ exports.up = function(db) {
           table: 'posters',
           mapping: 'id',
           rules: {
-            onDelete: 'restrict',
+            onDelete: 'cascade',
             onUpdate: 'restrict'
           }
         }
@@ -45,7 +45,7 @@ exports.up = function(db) {
         table: 'artists',
         mapping: 'id',
         rules: {
-          onDelete: 'restrict',
+          onDelete: 'cascade',
           onUpdate: 'restrict'
         }
       }
