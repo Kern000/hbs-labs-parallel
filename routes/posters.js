@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Poster, Property, Artist } = require('../models');
-const { bootstrapField, createPosterProductForm } = require('../forms');
+const { bootstrapField, createPosterProductForm, createSearchForm } = require('../forms');
 const async = require('hbs/lib/async');
 const { checkAuthentication } = require("../middleware");
 
@@ -14,6 +14,89 @@ router.get('/', async (req,res)=>{
         'posters': posters.toJSON(),
     })
 })
+
+router.get('/search', async(req,res)=>{
+
+    let allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')]);
+
+    allProperties.unshift([0, '-----']);
+
+    let allArtists = await Artist.fetchAll().map(artist => [artist.get('id'), artist.get('name')]);
+
+    let searchForm = createSearchForm(allProperties, allArtists);
+
+    let posters = await Poster.collection().fetch(
+    {
+        withRelated:['property', 'artists']
+    });
+
+    searchForm.handle(req, {
+        'success': async (searchForm) => {
+
+            console.log('success route hit')
+
+            if (searchForm.data.title) {
+                console.log('search form title hit', searchForm.data.title)
+                posters.where('title', 'like', '%' + searchForm.data.title + '%')
+            }
+
+            if (searchForm.data.min_cost) {
+                console.log('search form min cost hit', searchForm.data.min_cost)
+                posters.where('cost', '>=', searchForm.data.min_cost)
+            }
+
+            if (searchForm.data.max_cost) {
+                console.log('search form max cost hit', searchForm.data.max_cost)
+                posters.where('cost', '<=', searchForm.data.max_cost)
+            }
+
+            if (searchForm.data.media_property_id != 0) {
+                console.log('search form media property id hit =>', searchForm.data.media_property_id)
+
+                posters.where('media_property_id', '=', searchForm.data.media_property_id)
+            }
+
+            if (searchForm.data.max_height){
+                console.log('search form max height hit', searchForm.data.max_height)
+                posters.where('height', '<=', searchForm.data.max_height)
+            }
+
+            if (searchForm.data.max_width){
+                console.log('search form max width hit', searchForm.data.max_width)
+                posters.where('width', '<=', searchForm.data.max_width)
+            }
+
+            if (searchForm.data.artists){
+                console.log('search form artists hit', searchForm.data.artists)
+
+                posters.query('join', 'artists_posters', 'posters.id', 'poster_id')
+                .where('artist_id', 'in', searchForm.data.artists.split(','))
+            }
+            
+            console.log(posters)
+
+            res.render('posters/search', {
+                'posters': posters.toJSON(),
+                'form': searchForm.toHTML(bootstrapField)
+            })
+        },
+        'error': async (searchForm) => {
+            res.render('posters/search', {
+                'posters': posters.toJSON(),
+                'form': searchForm.toHTML(bootstrapField)
+            })    
+        },
+        'empty': async (searchForm) => {
+            res.render('posters/search', {
+                'posters': posters.toJSON(),
+                'form': searchForm.toHTML(bootstrapField)
+            })
+        }
+    })
+
+})
+
+
 
 router.get('/add-poster', async (req, res) => {
 

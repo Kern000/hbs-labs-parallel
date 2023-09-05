@@ -158,5 +158,66 @@ const createLoginForm = () => {
     })
 };
 
-module.exports = { createPosterProductForm, bootstrapField, createRegisterForm, createLoginForm };
+
+const createSearchForm = (properties=[], artists=[]) => {
+    return forms.create({
+        'title': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'min_cost': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            validators:[validators.min(0), validators.integer()]
+        }),
+        'max_cost': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'max_height': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            validators:[validators.integer()]
+        }),
+        'max_width': fields.number({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            validators:[validators.integer()]
+        }),
+        'media_property_id': fields.string({
+            label:'Property',
+            required: false,
+            errorAfterField: true,
+            widget: widgets.select(),
+            choices: properties,
+            cssClasses: {
+                label: ['form-label']
+            }
+        }),
+        'artists': fields.string({
+            required: false,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: artists
+        })
+    })
+};
+
+
+module.exports = { createPosterProductForm, bootstrapField, createRegisterForm, createLoginForm, createSearchForm };
 

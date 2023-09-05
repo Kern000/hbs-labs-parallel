@@ -1,0 +1,62 @@
+{{#extends 'base'}}
+{{#block 'content'}}
+    <h1> Search for Posters </h1>
+    
+    <form method="GET">
+        {{{form}}}
+        <input type="submit" class="mb-2 mt-2 btn btn-primary"/>
+    </form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Cost</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Stock</th>
+            <th>Height</th>
+            <th>Width</th>  
+            <th>Media Property</th>  
+            <th>Artists</th>
+            <th>Image</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each posters}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.title}}</td>
+                <td>{{this.cost}}</td>
+                <td>{{this.description}}</td>
+                <td>{{this.date}}</td>
+                <td>{{this.stock}}</td>
+                <td>{{this.height}}</td>
+                <td>{{this.width}}</td>
+                <td>{{this.property.name}}</td>
+                <td>
+                    {{#each this.artists}}
+                        <span class="badge bg-secondary">{{this.name}}</span>
+                    {{/each}}
+                </td>
+                <td>
+                    {{#if this.thumbnail_url}}
+                        <img src="{{this.thumbnail_url}}" class="img-fluid" alt="image">
+                    {{/if}}
+                </td>
+                <td>
+                    <a href="/posters/{{this.id}}/update" class="btn btn-primary btn-sm">Update</a>
+                    <a href="/posters/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {{/each}}
+    </tbody>
+</table>
+
+
+
+
+{{/block}}
+{{/extends}}
