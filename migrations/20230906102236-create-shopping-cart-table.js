@@ -15,34 +15,37 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-  return db.createTable('posters_artists',{
+  return db.createTable('cart_items', {
     id: {
       type: 'int',
       primaryKey: true,
       autoIncrement: true
     },
-    poster_id:{
-        type:'int',
-        primaryKey: true,
-        notNull: true,
-        unsigned: true,
-        foreignKey: {
-          name:'posters_artists_poster_fk',
-          table: 'posters',
-          mapping: 'id',
-          rules: {
-            onDelete: 'cascade',
-            onUpdate: 'restrict'
-          }
-        }
+    quantity: {
+      type: 'int',
+      unsigned: true
     },
-    artist_id: {
-      type:'int',
-      notNull: true,
+    user_id: {
+      type: 'int',
       unsigned: true,
+      notNull: true,
       foreignKey: {
-        name:'posters_artists_artist_fk',
-        table: 'artists',
+        name: 'cart_items_user_fk',
+        table: 'users',
+        mapping: 'id',
+        rules: {
+          onDelete: 'cascade',
+          onUpdate: 'restrict'
+        }
+      }
+    },
+    poster_id: {
+      type: 'int',
+      unsigned: true,
+      notNull: true,
+      foreignKey: {
+        name: 'cart_items_poster_fk',
+        table: 'posters',
         mapping: 'id',
         rules: {
           onDelete: 'cascade',
@@ -50,13 +53,13 @@ exports.up = function(db) {
         }
       }
     }
-  })
+  });
 };
 
 exports.down = async function(db) {
-  await db.removeForeignKey('posters_artists', 'posters_artists_poster_fk');
-  await db.removeForeignKey('posters_artists', 'posters_artists_artist_fk');
-  return db.dropTable('posters_artists');
+  await db.removeForeignKey('cart_items', 'cart_items_user_fk');
+  await db.removeForeignKey('cart_items', 'cart_items_poster_fk');
+  return db.dropTable('cart_items');
 };
 
 exports._meta = {

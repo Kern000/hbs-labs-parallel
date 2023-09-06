@@ -30,7 +30,7 @@ app.use(
 
 app.use(session({
   store: new FileStore(),
-  secret: "meow123",
+  secret: process.env.SESSION_SECRET_KEY,
   resave: false,
   saveUninitialized: true
 }));
@@ -72,12 +72,14 @@ const landingRoutes = require('./routes/landing');
 const posterRoutes = require('./routes/posters');
 const userRoutes = require('./routes/user');
 const cloudinaryRoutes = require('./routes/cloudinary')
+const cartRoutes = require('./routes/cart')
 
 async function main() {
     app.use('/', landingRoutes);
     app.use('/posters', posterRoutes);	
     app.use('/user', userRoutes);
     app.use('/cloudinary', cloudinaryRoutes);
+    app.use('/cart', cartRoutes);
 }
 
 main();

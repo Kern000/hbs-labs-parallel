@@ -29,7 +29,21 @@ const Artist = bookshelf.model('Artist',{
 })
 
 const User = bookshelf.model('User',{
-    tableName:'users'
+
+    tableName:'users',
+
+    cartItems() {
+        return this.belongsToMany('CartItem');      //one user many cart items
+    }
 })
 
-module.exports = { Poster, Property, Artist, User };
+const CartItem = bookshelf.model("CartItem", {
+
+    tableName: 'cart_items',
+
+    poster() {
+        return this.belongsTo('Poster')     //One cart item only one poster product
+    }
+})
+
+module.exports = { Poster, Property, Artist, User, CartItem };
