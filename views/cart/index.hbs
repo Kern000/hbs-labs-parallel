@@ -1,17 +1,37 @@
-{{!-- {{#extends 'base'}}
+{{#extends 'base'}}
 {{#block 'content'}}
 
     <h1> Items In Your Cart </h1>
     <div class="list-group">
-        {{#each ItemsInCart}}
+        {{#each itemsInCart}}
         <div class="list-group-item">
-            <img src="{{this.poster}}
+            <img src="{{this.poster.thumbnail_url}}" class="img-fluid"/>
+            <h5>{{this.poster.title}}</h5>
         </div>
+        <div>
+            <h6>{{this.poster.description}}</h6>
+        </div>
+        <ul>
+            <li> Price: {{this.poster.cost}}
+            </li>
+            <li> Quantity:
+                <form method="POST" action="/cart/{{this.poster.id}}/update-quantity">
+                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                    <input type="number" value="{{this.quantity}}" name="newQuantity" style="width:2em"/>
+                    <button class="ml-2 mb-1 btn btn-success btn-sm"> Update Quantity </button>
+                </form>
+                <form method="POST" action="/cart/{{this.poster.id}}/delete">
+                    <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                    <a href="#" class="mt-3 ml-3 btn btn-danger btn-sm" onclick="
+                        event.preventDefault();
+                        event.target.parentNode.submit();"
+                    > Delete Item </a>
+                </form>
+            </li>
 
 
-
-
+        </ul>
+    {{/each}}
     </div>
-
 {{/block}}
-{{/extends}} --}}
+{{/extends}}

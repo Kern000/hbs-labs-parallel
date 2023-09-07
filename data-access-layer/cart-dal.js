@@ -1,12 +1,14 @@
 const { CartItem } = require('../models');
 
 const fetchCartItems = async (userId) => {
+
     let cartItems = await CartItem.collection()
                     .where({'user_id': userId})
                     .fetch({
                         'require': false,
-                        'withRelated': ['poster', 'poster.property']
+                        'withRelated': ['poster', 'poster.property', 'poster.artists']
                     })
+
     return cartItems;
 }
 
@@ -27,6 +29,7 @@ const fetchCartItemByUserAndProduct = async (userId, posterId) => {
     }).fetch({
         require: false
     })
+    return cartItem;
 }
 
 const updateItemQuantity = async (cartItem = null, userId = null, posterId = null, newQuantity = null) => {
@@ -43,6 +46,7 @@ const updateItemQuantity = async (cartItem = null, userId = null, posterId = nul
 
 const removeFromCart = async (userId, posterId) => {
     const cartItem = await fetchCartItemByUserAndProduct(userId, posterId);
+    console.log(cartItem)
     await cartItem.destroy();
 }
 

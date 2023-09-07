@@ -1,6 +1,7 @@
 const cartDataLayer = require('../data-access-layer/cart-dal');
 
 const fetchCartItems = async (userId) => {
+
     let cartItems = await cartDataLayer.fetchCartItems(userId);
     return cartItems;
 }
@@ -9,7 +10,7 @@ const addToCart = async (userId, posterId, quantity) => {
     let cartItem = await cartDataLayer.fetchCartItemByUserAndProduct(userId, posterId);
     if (cartItem){
         let newQuantity = cartItem.get('quantity')+1;
-        await cartDataLayer.updateItemQuantity(cartItem, userId=null, productId=null, newQuantity);
+        await cartDataLayer.updateItemQuantity(cartItem=cartItem, userId=null, productId=null, newQuantity=newQuantity);
     } else {
         return await cartDataLayer.createCartItem(userId, posterId, quantity);
     }
