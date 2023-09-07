@@ -1,5 +1,10 @@
 const { Poster, Property, Artist } = require("../models")
 
+const getAllPosters = async () => {
+    return await Poster.fetchAll();
+}
+
+
 const fetchFormData = async () => {
 
     const posters = await Poster.collection().fetch(
@@ -57,5 +62,6 @@ module.exports= {
                     getAllProperties,
                     getAllArtists,
                     findPoster,
-                    addPoster
+                    addPoster,
+                    getAllPosters
                 }

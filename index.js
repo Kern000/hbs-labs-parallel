@@ -36,7 +36,16 @@ app.use(session({
 }));
 
 app.use(flash());
-app.use(csurf());
+
+const csrfInstance = csurf();
+
+app.use(function(req,res,next){
+
+  if (req.url === "/checkout/process-payment" || req.url.slice(0,5) == "/api/"){
+     return next();
+  }
+  csrfInstance(req,res,next);
+})
 
 app.use(function(error, req, res, next){
   if(error && error.code == "EBADCSRFTOKEN"){
@@ -48,10 +57,11 @@ app.use(function(error, req, res, next){
 })
 
 app.use(function(req,res,next){
-  res.locals.csrfToken = req.csrfToken();
+  if (req.csrfToken){
+    res.locals.csrfToken = req.csrfToken();
+  }
   next();
 })
-
 
 app.use(function(req,res,next){
   const successMessages = req.flash("success");
@@ -73,6 +83,8 @@ const posterRoutes = require('./routes/posters');
 const userRoutes = require('./routes/user');
 const cloudinaryRoutes = require('./routes/cloudinary')
 const cartRoutes = require('./routes/cart')
+const checkOutRoutes = require('./routes/checkout')
+const apiRoutes = require('./routes/api/posters')
 
 async function main() {
     app.use('/', landingRoutes);
@@ -80,6 +92,8 @@ async function main() {
     app.use('/user', userRoutes);
     app.use('/cloudinary', cloudinaryRoutes);
     app.use('/cart', cartRoutes);
+    app.use('/checkout', checkOutRoutes);
+    // app.use('/api/posters', express.json(), apiRoutes.posters);
 }
 
 main();
