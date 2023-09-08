@@ -4,17 +4,6 @@ const getAllPosters = async () => {
     return await Poster.fetchAll();
 }
 
-
-const fetchFormData = async () => {
-
-    const posters = await Poster.collection().fetch(
-        {
-            withRelated:['property', 'artists']
-        }
-        );
-    return posters
-}
-
 const getAllProperties = async () => {
 
     const allProperties = await Property.fetchAll().map(property => [property.get('id'), property.get('name')]);
@@ -58,7 +47,6 @@ const addPoster = async (posterForm) => {
 }
 
 module.exports= {
-                    fetchFormData,
                     getAllProperties,
                     getAllArtists,
                     findPoster,
