@@ -7,9 +7,11 @@ const session = require('express-session')
 const FileStore = require('session-file-store')(session)
 const flash = require('connect-flash');
 const csurf = require('csurf');
+const cors = require('cors');
 
 // create an instance of express app
 let app = express();
+app.use(cors());
 
 // set the view engine
 app.set("view engine", "hbs");
@@ -84,7 +86,10 @@ const userRoutes = require('./routes/user');
 const cloudinaryRoutes = require('./routes/cloudinary')
 const cartRoutes = require('./routes/cart')
 const checkOutRoutes = require('./routes/checkout')
-const apiRoutes = { posters: require('./routes/api/posters') }
+const apiRoutes = {
+  posters: require('./routes/api/posters'),
+  users: require('./routes/api/users')
+}
 
 async function main() {
     app.use('/', landingRoutes);
@@ -94,6 +99,7 @@ async function main() {
     app.use('/cart', cartRoutes);
     app.use('/checkout', checkOutRoutes);
     app.use('/api/posters', express.json(), apiRoutes.posters);
+    app.use('/api/users', express.json(), apiRoutes.users)
 }
 
 main();
