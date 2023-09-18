@@ -3,11 +3,11 @@ const router = express.Router();
 const { Poster } = require('../models');
 const { bootstrapField, createPosterProductForm, createSearchForm } = require('../forms');
 const { checkAuthentication } = require("../middleware");
-const { fetchFormData, getAllProperties, getAllArtists, findPoster, addPoster } = require("../data-access-layer/poster-dal");
+const { getAllPosters, getAllProperties, getAllArtists, findPoster, addPoster } = require("../data-access-layer/poster-dal");
 
 router.get('/', async (req,res)=>{
 
-    let posters = await fetchFormData();
+    let posters = await getAllPosters();
 
     res.render('posters/index', {
         'posters': posters.toJSON(),
